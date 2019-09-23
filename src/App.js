@@ -1,27 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { getGameState } from './gameService';
+import { Registration } from './Registration';
+import { Game } from './Game';
 
-function App() {
+export const App = () => {
+  const [p1, setP1] = useState('');
+  const [p2, setP2] = useState('');
+  const [board, setBoard] = useState([
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', '']
+  ]);
+  const [winner, setWinner] = useState('');
+
+  const handleNewGame = (p1, p2) => {
+    setP1(p1);
+    setP2(p2);
+  };
+
+  const handleCellClick = (rowIndex, cellIndex) => {
+    const _board = board.map(row => [...row]);
+    _board[rowIndex][cellIndex] = 'X';
+    if (getGameState(_board) === 'X') {
+      setWinner('X');
+    }
+    setBoard(_board);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          data-testid="app-link"
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Registration onNewGame={handleNewGame}></Registration>
+      <Game
+        board={board}
+        p1={p1}
+        p2={p2}
+        onCellClicked={handleCellClick}
+      ></Game>
+      {winner && <div data-testid="winner">{`${p1} won!!!`}</div>}
     </div>
   );
-}
+};
 
 export default App;
